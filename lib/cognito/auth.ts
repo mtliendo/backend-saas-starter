@@ -7,14 +7,14 @@ import {
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs'
 import { envNameContext } from '../../cdk.context'
 
-type CreateTravelUserpool = {
+type CreateSaasUserpool = {
 	appName: string
 	env: envNameContext
 	addUserPostConfirmation: NodejsFunction
 }
-export function createTravelUserpool(
+export function createSaasUserpool(
 	scope: Construct,
-	props: CreateTravelUserpool
+	props: CreateSaasUserpool
 ) {
 	const userPool = new awsCognito.UserPool(
 		scope,

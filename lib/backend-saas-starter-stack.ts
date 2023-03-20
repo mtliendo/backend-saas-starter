@@ -1,13 +1,14 @@
-import { CDKContext } from './../cdk.context.d'
+import { CDKContext } from '../cdk.context'
 import * as cdk from 'aws-cdk-lib'
 import { Construct } from 'constructs'
-import { createTravelTable, createUserTable } from './databases/tables'
+import { createSaasTable, createUserTable } from './databases/tables'
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs'
 import path = require('path')
 import { Runtime } from 'aws-cdk-lib/aws-lambda'
-import { createTravelUserpool } from './cognito/auth'
+import { createSaasUserpool } from './cognito/auth'
+import { createSaasPicsBucket } from './s3/saasPics'
 
-export class BackendTripPostStack extends cdk.Stack {
+export class BackendSaasStarterStack extends cdk.Stack {
 	constructor(
 		scope: Construct,
 		id: string,
@@ -23,13 +24,13 @@ export class BackendTripPostStack extends cdk.Stack {
 			entry: path.join(__dirname, `./functions/addUser/main.ts`),
 		})
 
-		const cognitoAuth = createTravelUserpool(this, {
+		const cognitoAuth = createSaasUserpool(this, {
 			appName: context.appName,
 			env: context.environment,
 			addUserPostConfirmation: addUserFunc,
 		})
 
-		const travelDB = createTravelTable(this, {
+		const saasDB = createSaasTable(this, {
 			appName: context.appName,
 			env: context.environment,
 		})
@@ -38,6 +39,13 @@ export class BackendTripPostStack extends cdk.Stack {
 			appName: context.appName,
 			env: context.environment,
 			addUserFunc,
+		})
+
+		const saasPicsBucket = createSaasPicsBucket(this, {
+			appName: context.appName,
+			env: context.environment,
+			allowedOrigins: context.s3AllowedOrigins,
+			authenticatedRole: cognitoAuth.identityPool.authenticatedRole,
 		})
 	}
 }

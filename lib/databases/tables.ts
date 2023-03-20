@@ -9,20 +9,20 @@ type BaseTableProps = {
 	env: envNameContext
 }
 
-type createTravelTableProps = BaseTableProps & {}
-export function createTravelTable(
+type createSaasTableProps = BaseTableProps & {}
+export function createSaasTable(
 	scope: Construct,
-	props: createTravelTableProps
+	props: createSaasTableProps
 ): awsDynamodb.Table {
-	const travelTable = new awsDynamodb.Table(scope, 'TravelTable', {
-		tableName: `${props.appName}-${props.env}-TravelTable`,
+	const saasTable = new awsDynamodb.Table(scope, 'SaasTable', {
+		tableName: `${props.appName}-${props.env}-SaasTable`,
 		removalPolicy:
 			props.env === 'develop' ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN,
 		billingMode: awsDynamodb.BillingMode.PAY_PER_REQUEST,
 		partitionKey: { name: 'id', type: awsDynamodb.AttributeType.STRING },
 	})
 
-	return travelTable
+	return saasTable
 }
 
 type CreateUserTableProps = BaseTableProps & {

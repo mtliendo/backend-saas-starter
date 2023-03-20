@@ -1,13 +1,14 @@
 {
 	"globals": {
-		"appName": "trip-logger",
+		"appName": "appsync-saas-saas",
 		"region": "us-east-1",
-		"appDescription": "A stack for a Travel pic viewer"
+		"appDescription": "A sample saas to inspire your next great idea!"
 	},
 	"environments": [
 		{
 			"environment": "develop",
-			"branchName": "develop"
+			"branchName": "develop",
+			"s3AllowedOrigins": ["*"]
 		}
 	]
 }
