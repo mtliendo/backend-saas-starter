@@ -1,0 +1,56 @@
+type Query {
+	# This function gets:
+	# proof of auth automatically handled by AppSync
+	# proof of self automatically given as event.context.identity
+	# Use above to Lookup user in db and make sure they are paid
+
+	getRecipeIdea(ingredients: [String]!): String
+		@auth(rules: [{ allow: private }])
+		@function(name: "generateAIRecipeFunc-{env}") # event.context.identity.sub
+}
+
+# given cognito user can read their own user details
+# a postConfirmation trigger adds the user to the db upon signup
+type User @model @auth(rules: [{ allow: owner, operations: [read] }]) {
+	id: ID!
+	username: String!
+	email: AWSEmail!
+	stripeCustomerId: String
+	subscriptionStatus: PLAN_STATUS_ENUM!
+	subscriptionPlan: PLAN_NAME_ENUM
+}
+
+# Given cognito user can CRUDL on their own recipe
+# Public: List Recipes that have visiblity = public
+# Auth: Can create
+type Recipe @model @auth(rules: [{ allow: owner }]) {
+	id: ID!
+	title: String!
+	owner: String @auth(rules: [{ allow: owner, operations: [read] }])
+	description: String!
+	coverImage: String! # Cloudinary public_id
+	ingredientsImage: String!
+	servings: Int!
+	ingredients: [Ingredient]!
+	steps: [Step]!
+	visibility: RECIPE_STATUS_ENUM!
+}
+
+type Ingredient {
+	items: [String]!
+}
+
+type Step {
+	image: String # Cloudinary public_id
+	title: String!
+	description: String!
+}
+
+enum PLAN_STATUS_ENUM {
+	prospective # Signed up, new to platform. Hasn't ever subscribed
+	trialing # Started n-day free trial. Assumes card on file
+	active # They're paid
+	past_due # They're unpaid, more attempts will automatically be made
+	unpaid # Stripe is done attempting. Revoke access here
+	canceled # Customer canceled. Still signed up. Has to resubscribe
+}

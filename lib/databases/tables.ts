@@ -3,6 +3,7 @@ import * as awsDynamodb from 'aws-cdk-lib/aws-dynamodb'
 import { RemovalPolicy } from 'aws-cdk-lib'
 import { envNameContext } from '../../cdk.context'
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs'
+import { Function } from 'aws-cdk-lib/aws-lambda'
 
 type BaseTableProps = {
 	appName: string
@@ -25,9 +26,7 @@ export function createSaasTable(
 	return saasTable
 }
 
-type CreateUserTableProps = BaseTableProps & {
-	addUserFunc: NodejsFunction
-}
+type CreateUserTableProps = BaseTableProps & {}
 export function createUserTable(
 	scope: Construct,
 	props: CreateUserTableProps
@@ -39,8 +38,6 @@ export function createUserTable(
 		billingMode: awsDynamodb.BillingMode.PAY_PER_REQUEST,
 		partitionKey: { name: 'id', type: awsDynamodb.AttributeType.STRING },
 	})
-
-	userTable.grantWriteData(props.addUserFunc)
 
 	return userTable
 }

@@ -8,14 +8,16 @@ exports.handler = async (event: PostConfirmationConfirmSignUpTriggerEvent) => {
 
 	//construct the param
 	const params = {
-		TableName: process.env.API_HELLO_USERTABLE_NAME as string,
+		TableName: process.env.UserTableName as string,
 		Item: {
 			__typename: 'User',
 			id: event.request.userAttributes.sub,
 			createdAt: isoDate, // ex) 2023-02-16T16:07:14.189Z
 			updatedAt: isoDate,
+			owner: `${event.request.userAttributes.sub}::${event.userName}`,
 			username: event.userName,
 			email: event.request.userAttributes.email,
+			subscriptionStatus: 'prospective',
 		},
 	}
 
