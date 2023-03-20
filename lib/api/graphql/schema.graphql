@@ -7,10 +7,22 @@ type Query {
 	getRecipeIdea(ingredients: [String]!): String
 		@auth(rules: [{ allow: private }])
 		@function(name: "generateAIRecipeFunc-{env}") # event.context.identity.sub
+	getUser(id: String!): User
+	getRecipeForUser(id: String): Recipe
+	listRecipesForUser(id: String!): [Recipe]
+}
+
+type Mutation {
+	updateUser(input: UserInput!): User
+	createRecipeForUser(input: RecipeCreateInput!): Recipe
+	updateRecipeForUser(input: RecipeUpdateInput!): Recipe
+	deleteRecipeForUser(id: String!): Recipe
 }
 
 # given cognito user can read their own user details
 # a postConfirmation trigger adds the user to the db upon signup
+
+# This needs to be broken out into types and inputs
 type User @model @auth(rules: [{ allow: owner, operations: [read] }]) {
 	id: ID!
 	username: String!
@@ -23,6 +35,8 @@ type User @model @auth(rules: [{ allow: owner, operations: [read] }]) {
 # Given cognito user can CRUDL on their own recipe
 # Public: List Recipes that have visiblity = public
 # Auth: Can create
+
+# This needs to be broken out into types and inputs
 type Recipe @model @auth(rules: [{ allow: owner }]) {
 	id: ID!
 	title: String!
