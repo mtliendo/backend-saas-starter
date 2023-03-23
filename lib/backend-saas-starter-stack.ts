@@ -6,6 +6,7 @@ import { createSaasTable, createUserTable } from './databases/tables'
 import { createSaasUserpool } from './cognito/auth'
 import { createSaasPicsBucket } from './s3/saasPics'
 import { createStripeWebhook } from './functions/stripeWebhook/construct'
+import { createSaaSAPI } from './api/appsync'
 
 export class BackendSaasStarterStack extends cdk.Stack {
 	constructor(
@@ -52,6 +53,15 @@ export class BackendSaasStarterStack extends cdk.Stack {
 			appName: context.appName,
 			env: context.environment,
 			addUserPostConfirmation: addUserFunc,
+		})
+
+		const saasAPI = createSaaSAPI(this, {
+			appName: context.appName,
+			env: context.environment,
+			saasDB,
+			userDB,
+			userpool: cognitoAuth.userPool,
+			unauthenticatedRole: cognitoAuth.identityPool.unauthenticatedRole,
 		})
 
 		const saasPicsBucket = createSaasPicsBucket(this, {

@@ -4,43 +4,40 @@ type Query {
 	# proof of self automatically given as event.context.identity
 	# Use above to Lookup user in db and make sure they are paid
 
+	# This is going to call a lambda function
 	getRecipeIdea(ingredients: [String]!): String
-		@auth(rules: [{ allow: private }])
-		@function(name: "generateAIRecipeFunc-{env}") # event.context.identity.sub
-	getUser(id: String!): User
-	getRecipeForUser(id: String): Recipe
-	listRecipesForUser(id: String!): [Recipe]
+	getUser(id: String!): User @aws_cognito_user_pools
+	getRecipeForUser(id: String): Recipe @aws_cognito_user_pools
+	listRecipesForUser(id: String!): [Recipe] @aws_cognito_user_pools
 }
 
 type Mutation {
-	updateUser(input: UserInput!): User
-	createRecipeForUser(input: RecipeCreateInput!): Recipe
-	updateRecipeForUser(input: RecipeUpdateInput!): Recipe
-	deleteRecipeForUser(id: String!): Recipe
+	updateUser(input: UserInput!): User @aws_cognito_user_pools
+	createRecipeForUser(input: RecipeCreateInput!): Recipe @aws_cognito_user_pools
+	updateRecipeForUser(input: RecipeUpdateInput!): Recipe @aws_cognito_user_pools
+	deleteRecipeForUser(id: String!): Recipe @aws_cognito_user_pools
 }
 
-# given cognito user can read their own user details
-# a postConfirmation trigger adds the user to the db upon signup
-
-# This needs to be broken out into types and inputs
-type User @model @auth(rules: [{ allow: owner, operations: [read] }]) {
+type User {
 	id: ID!
 	username: String!
 	email: AWSEmail!
+	profilePicture: AWSURL
+	displayName: String
 	stripeCustomerId: String
 	subscriptionStatus: PLAN_STATUS_ENUM!
 	subscriptionPlan: PLAN_NAME_ENUM
 }
 
-# Given cognito user can CRUDL on their own recipe
-# Public: List Recipes that have visiblity = public
-# Auth: Can create
+input UserInput {
+	id: ID!
+	profilePicture: AWSURL
+	displayName: String
+}
 
-# This needs to be broken out into types and inputs
-type Recipe @model @auth(rules: [{ allow: owner }]) {
+type Recipe {
 	id: ID!
 	title: String!
-	owner: String @auth(rules: [{ allow: owner, operations: [read] }])
 	description: String!
 	coverImage: String! # Cloudinary public_id
 	ingredientsImage: String!
@@ -58,6 +55,30 @@ type Step {
 	image: String # Cloudinary public_id
 	title: String!
 	description: String!
+}
+
+input RecipeCreateInput {
+	# Note that this doesn't take an id, one is already created
+	title: String!
+	description: String!
+	coverImage: String! # Cloudinary public_id
+	ingredientsImage: String!
+	servings: Int!
+	ingredients: [Ingredient]!
+	steps: [Step]!
+	visibility: RECIPE_STATUS_ENUM!
+}
+
+input RecipeUpdateInput {
+	id: ID!
+	title: String!
+	description: String!
+	coverImage: String! # Cloudinary public_id
+	ingredientsImage: String!
+	servings: Int!
+	ingredients: [Ingredient]!
+	steps: [Step]!
+	visibility: RECIPE_STATUS_ENUM!
 }
 
 enum PLAN_STATUS_ENUM {

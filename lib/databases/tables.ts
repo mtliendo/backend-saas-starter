@@ -2,8 +2,6 @@ import { Construct } from 'constructs'
 import * as awsDynamodb from 'aws-cdk-lib/aws-dynamodb'
 import { RemovalPolicy } from 'aws-cdk-lib'
 import { envNameContext } from '../../cdk.context'
-import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs'
-import { Function } from 'aws-cdk-lib/aws-lambda'
 
 type BaseTableProps = {
 	appName: string
@@ -21,6 +19,15 @@ export function createSaasTable(
 			props.env === 'develop' ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN,
 		billingMode: awsDynamodb.BillingMode.PAY_PER_REQUEST,
 		partitionKey: { name: 'id', type: awsDynamodb.AttributeType.STRING },
+	})
+
+	saasTable.addGlobalSecondaryIndex({
+		indexName: 'typename-id-index',
+		partitionKey: {
+			name: '__typename',
+			type: awsDynamodb.AttributeType.STRING,
+		},
+		sortKey: { name: 'id', type: awsDynamodb.AttributeType.STRING },
 	})
 
 	return saasTable
