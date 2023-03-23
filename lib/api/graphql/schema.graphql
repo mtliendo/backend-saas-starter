@@ -1,21 +1,86 @@
-type Query {
-	# This function gets:
-	# proof of auth automatically handled by AppSync
-	# proof of self automatically given as event.context.identity
-	# Use above to Lookup user in db and make sure they are paid
+type Ingredient {
+	items: [String]!
+}
 
-	# This is going to call a lambda function
-	getRecipeIdea(ingredients: [String]!): String
-	getUser(id: String!): User @aws_cognito_user_pools
-	getRecipeForUser(id: String): Recipe @aws_cognito_user_pools
-	listRecipesForUser(id: String!): [Recipe] @aws_cognito_user_pools
+input IngredientInput {
+	items: [String]!
 }
 
 type Mutation {
 	updateUser(input: UserInput!): User @aws_cognito_user_pools
-	createRecipeForUser(input: RecipeCreateInput!): Recipe @aws_cognito_user_pools
-	updateRecipeForUser(input: RecipeUpdateInput!): Recipe @aws_cognito_user_pools
-	deleteRecipeForUser(id: String!): Recipe @aws_cognito_user_pools
+	createRecipe(input: RecipeCreateInput!): Recipe @aws_cognito_user_pools
+	updateRecipe(input: RecipeUpdateInput!): Recipe @aws_cognito_user_pools
+	deleteRecipe(id: String!): Recipe @aws_cognito_user_pools
+}
+
+# prospective:Signed up, new to platform. Hasn't ever subscribed
+# trialing:Started n-day free trial. Assumes card on file
+# active:They're paid
+# past_due:They're unpaid, more attempts will automatically be made
+# unpaid:Stripe is done attempting. Revoke access here
+# canceled:Customer canceled. Still signed up. Has to resubscribe
+
+enum PLAN_STATUS_ENUM {
+	prospective
+	trialing
+	active
+	past_due
+	unpaid
+	canceled
+}
+
+# ProTip: Before uploading, put the schema in the AWS AppSync Console to make sure that it is valid
+type Query {
+	# This is going to call a lambda function
+	getRecipeIdea(ingredients: [String]!): String @aws_cognito_user_pools
+	getUser(id: String!): User @aws_cognito_user_pools
+	getRecipe(id: String): Recipe @aws_cognito_user_pools
+	listRecipes(id: String!): [Recipe] @aws_cognito_user_pools
+}
+
+type Recipe {
+	id: ID!
+	title: String!
+	description: String!
+	coverImage: String!
+	ingredientsImage: String!
+	servings: Int!
+	ingredients: [Ingredient]!
+	steps: [Step]!
+}
+
+input RecipeCreateInput {
+	# Note that this doesn't take an id, one is already created
+	title: String!
+	description: String!
+	coverImage: String!
+	ingredientsImage: String!
+	servings: Int!
+	ingredients: [IngredientInput]!
+	steps: [StepInput]!
+}
+
+input RecipeUpdateInput {
+	id: ID!
+	title: String!
+	description: String!
+	coverImage: String!
+	ingredientsImage: String!
+	servings: Int!
+	ingredients: [IngredientInput]!
+	steps: [StepInput]!
+}
+
+type Step {
+	image: String
+	title: String!
+	description: String!
+}
+
+input StepInput {
+	image: String
+	title: String!
+	description: String!
 }
 
 type User {
@@ -26,68 +91,10 @@ type User {
 	displayName: String
 	stripeCustomerId: String
 	subscriptionStatus: PLAN_STATUS_ENUM!
-	# note sure why I thought I woud need this.
-	# will revert if that changes 🤷‍♂️
-	# subscriptionPlan: PLAN_NAME_ENUM
 }
 
 input UserInput {
 	id: ID!
 	profilePicture: AWSURL
 	displayName: String
-}
-
-type Recipe {
-	id: ID!
-	title: String!
-	description: String!
-	coverImage: String! # Cloudinary public_id
-	ingredientsImage: String!
-	servings: Int!
-	ingredients: [Ingredient]!
-	steps: [Step]!
-	visibility: RECIPE_STATUS_ENUM!
-}
-
-type Ingredient {
-	items: [String]!
-}
-
-type Step {
-	image: String # Cloudinary public_id
-	title: String!
-	description: String!
-}
-
-input RecipeCreateInput {
-	# Note that this doesn't take an id, one is already created
-	title: String!
-	description: String!
-	coverImage: String! # Cloudinary public_id
-	ingredientsImage: String!
-	servings: Int!
-	ingredients: [Ingredient]!
-	steps: [Step]!
-	visibility: RECIPE_STATUS_ENUM!
-}
-
-input RecipeUpdateInput {
-	id: ID!
-	title: String!
-	description: String!
-	coverImage: String! # Cloudinary public_id
-	ingredientsImage: String!
-	servings: Int!
-	ingredients: [Ingredient]!
-	steps: [Step]!
-	visibility: RECIPE_STATUS_ENUM!
-}
-
-enum PLAN_STATUS_ENUM {
-	prospective # Signed up, new to platform. Hasn't ever subscribed
-	trialing # Started n-day free trial. Assumes card on file
-	active # They're paid
-	past_due # They're unpaid, more attempts will automatically be made
-	unpaid # Stripe is done attempting. Revoke access here
-	canceled # Customer canceled. Still signed up. Has to resubscribe
 }
