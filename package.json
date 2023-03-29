@@ -10,6 +10,7 @@
 		"cdk": "cdk",
 		"create:amplifyWebhook": "aws amplify create-webhook --app-id \"$APP_ID\" --branch-name \"$BRANCH_NAME\"",
 		"create:SSMSecret": "aws secretsmanager create-secret --name \"$SECRET_NAME\" --secret-string \"$SECRET_VALUE\"",
+		"create:ParameterStoreSecret": "aws ssm put-parameter --name \"$SECRET_NAME\" --value \"$SECRET_VALUE\" --type SecureString",
 		"list:deployOutput": "aws cloudformation describe-stacks --stack-name \"$STACK_NAME\" --query \"Stacks[].Outputs[]\""
 	},
 	"devDependencies": {
