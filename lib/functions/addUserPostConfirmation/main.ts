@@ -14,7 +14,6 @@ exports.handler = async (event: PostConfirmationConfirmSignUpTriggerEvent) => {
 			id: event.request.userAttributes.sub,
 			createdAt: isoDate, // ex) 2023-02-16T16:07:14.189Z
 			updatedAt: isoDate,
-			owner: `${event.request.userAttributes.sub}::${event.userName}`,
 			username: event.userName,
 			email: event.request.userAttributes.email,
 			subscriptionStatus: 'prospective',

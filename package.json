@@ -13,6 +13,7 @@
 		"list:deployOutput": "aws cloudformation describe-stacks --stack-name \"$STACK_NAME\" --query \"Stacks[].Outputs[]\""
 	},
 	"devDependencies": {
+		"@aws-appsync/utils": "^1.1.0",
 		"@types/git-branch": "^2.0.2",
 		"@types/jest": "^29.4.0",
 		"@types/node": "18.14.6",
@@ -24,7 +25,6 @@
 		"typescript": "~4.9.5"
 	},
 	"dependencies": {
-		"@aws-appsync/utils": "^1.1.0",
 		"@aws-cdk/aws-cognito-identitypool-alpha": "^2.69.0-alpha.0",
 		"aws-cdk-lib": "2.69.0",
 		"constructs": "^10.0.0",
