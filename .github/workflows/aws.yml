@@ -15,19 +15,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check commit message
+        id: check_commit_message
         run: |
           if [[ "${{ github.event.head_commit.message }}" =~ --no-deploy$ ]]; then
-            echo "Skipping CDK deploy as commit message ends with '[no-deploy]'" &&
-            echo "The commit msg: '${{ github.event.head_commit.message }}'"
+            echo "Skipping CDK deploy as commit message '${{ github.event.head_commit.message }}' ends with 'no-deploy]'" &&
+            echo "::set-output name=skip_deployment::1"
             exit 0
           fi
       - name: Checkout repo
+        if: steps.check_commit_message.outputs.skip_deployment != '1'
         uses: actions/checkout@v3
       - uses: actions/setup-node@v2
         with:
           node-version: '18'
       - run: npm install
       - name: cdk diff
+        if: steps.check_commit_message.outputs.skip_deployment != '1'
         uses: youyo/aws-cdk-github-actions@v2
         with:
           cdk_subcommand: 'diff'
@@ -37,6 +40,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: cdk deploy
+        if: steps.check_commit_message.outputs.skip_deployment != '1'
         uses: youyo/aws-cdk-github-actions@v2
         with:
           cdk_subcommand: 'deploy'
@@ -47,6 +51,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       - name: Trigger Amplify Build
+        if: steps.check_commit_message.outputs.skip_deployment != '1'
         run: |
           if [ "${{ github.event_name }}" == "push" ] && [ "${{ github.ref }}" == "refs/heads/develop" ]; then
             WEBHOOK_URL="${{ secrets.DEVELOP_WEBHOOK_URL }}"
