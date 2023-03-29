@@ -17,8 +17,8 @@ jobs:
       - name: Check commit message
         id: check_commit_message
         run: |
-          if [[ "${{ github.event.head_commit.message }}" =~ --no-deploy$ ]]; then
-            echo "Skipping CDK deploy as commit message '${{ github.event.head_commit.message }}' ends with 'no-deploy]'" &&
+          if [[ "${{ github.event.head_commit.message }}" =~ --no-deploy\$ ]]; then
+            echo "Skipping CDK deploy as commit message '${{ github.event.head_commit.message }}' ends with '--no-deploy]'" &&
             echo "::set-output name=skip_deployment::1"
             exit 0
           fi
