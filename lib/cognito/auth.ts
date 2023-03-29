@@ -7,15 +7,12 @@ import {
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs'
 import { envNameContext } from '../../cdk.context'
 
-type CreateSaasUserpool = {
+type CreateSaasAuth = {
 	appName: string
 	env: envNameContext
 	addUserPostConfirmation: NodejsFunction
 }
-export function createSaasUserpool(
-	scope: Construct,
-	props: CreateSaasUserpool
-) {
+export function createSaasAuth(scope: Construct, props: CreateSaasAuth) {
 	const userPool = new awsCognito.UserPool(
 		scope,
 		`${props.appName}-${props.env}-userpool`,

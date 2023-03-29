@@ -3,10 +3,11 @@ import { CDKContext } from '../cdk.context'
 import * as cdk from 'aws-cdk-lib'
 import { Construct } from 'constructs'
 import { createSaasTable, createUserTable } from './databases/tables'
-import { createSaasUserpool } from './cognito/auth'
+import { createSaasAuth } from './cognito/auth'
 import { createSaasPicsBucket } from './s3/saasPics'
 import { createStripeWebhook } from './functions/stripeWebhook/construct'
 import { createSaaSAPI } from './api/appsync'
+import { CfnOutput } from 'aws-cdk-lib'
 
 export class BackendSaasStarterStack extends cdk.Stack {
 	constructor(
@@ -16,7 +17,6 @@ export class BackendSaasStarterStack extends cdk.Stack {
 		context: CDKContext
 	) {
 		super(scope, id, props)
-		// our code will go here
 
 		const userDB = createUserTable(this, {
 			appName: context.appName,
@@ -49,7 +49,7 @@ export class BackendSaasStarterStack extends cdk.Stack {
 			userDBTableName: userDB.tableName,
 		})
 
-		const cognitoAuth = createSaasUserpool(this, {
+		const cognitoAuth = createSaasAuth(this, {
 			appName: context.appName,
 			env: context.environment,
 			addUserPostConfirmation: addUserFunc,
@@ -69,6 +69,34 @@ export class BackendSaasStarterStack extends cdk.Stack {
 			env: context.environment,
 			allowedOrigins: context.s3AllowedOrigins,
 			authenticatedRole: cognitoAuth.identityPool.authenticatedRole,
+		})
+
+		new CfnOutput(this, 'saasPicsBucketName', {
+			value: saasPicsBucket.fileStorageBucket.bucketName,
+		})
+
+		new CfnOutput(this, 'cloudfrontURL', {
+			value: saasPicsBucket.fileStorageBucketCFDistribution.domainName,
+		})
+
+		new CfnOutput(this, 'stripeWebhookURL', {
+			value: stripeWebhook.stripeWebhookURL.url,
+		})
+
+		new CfnOutput(this, 'cognitoUserPoolId', {
+			value: cognitoAuth.userPool.userPoolId,
+		})
+
+		new CfnOutput(this, 'cognitoUserPoolClientId', {
+			value: cognitoAuth.userPoolClient.userPoolClientId,
+		})
+
+		new CfnOutput(this, 'region', {
+			value: context.region,
+		})
+
+		new CfnOutput(this, 'AppSyncURL', {
+			value: saasAPI.graphqlUrl,
 		})
 	}
 }
