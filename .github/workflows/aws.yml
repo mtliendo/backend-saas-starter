@@ -20,6 +20,12 @@ jobs:
         with:
           node-version: '18'
       - run: npm install
+      - name: Check commit message
+        run: |
+          if [[ "${{ github.event.head_commit.message }}" =~ \[no-deploy\]$ ]]; then
+            echo "Skipping CDK deployment as commit message ends with '[skip cicd]'"
+            exit 0
+          fi
       - name: cdk diff
         uses: youyo/aws-cdk-github-actions@v2
         with:
