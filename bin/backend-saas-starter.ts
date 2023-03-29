@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { CfnOutput } from 'aws-cdk-lib'
 import { initStack } from './init-stack'
 import 'source-map-support/register'
 import { BackendSaasStarterStack } from '../lib/backend-saas-starter-stack'
@@ -11,3 +12,7 @@ const saasStack = new BackendSaasStarterStack(
 	stackProps,
 	context
 )
+
+new CfnOutput(saasStack, 'stackName', {
+	value: saasStack.stackName,
+})

@@ -35,8 +35,8 @@ export const createStripeWebhook = (
 			runtime: Runtime.NODEJS_16_X,
 			environment: {
 				UserTableName: props.userDBTableName,
-				STRIPE_SECRET: `/saas/stripe-secret-${props.env}`,
-				STRIPE_WEBHOOK_SECRET: `/saas/stripe-webhook-secret-${props.env}`,
+				STRIPE_SECRET: props.environment.STRIPE_SECRET,
+				STRIPE_WEBHOOK_SECRET: props.environment.STRIPE_WEBHOOK_SECRET,
 			},
 		}
 	)

@@ -40,8 +40,8 @@ export class BackendSaasStarterStack extends cdk.Stack {
 			appName: context.appName,
 			env: context.environment,
 			environment: {
-				STRIPE_SECRET: `/saas/stripe-secret-${context.environment}`,
-				STRIPE_WEBHOOK_SECRET: `/saas/stripe-webhook-secret-${context.environment}`,
+				STRIPE_SECRET: `saas/${context.appName}/stripe-secret-${context.environment}`,
+				STRIPE_WEBHOOK_SECRET: `saas/${context.appName}/stripe-webhook-secret-${context.environment}`,
 				UserTableName: userDB.tableName,
 			},
 			region: context.region,

@@ -8,9 +8,9 @@
 		"build": "tsc",
 		"watch": "tsc -w",
 		"cdk": "cdk",
-		"create:webhook": "aws amplify create-webhook --app-id \"$APP_ID\" --branch-name \"$BRANCH_NAME\"",
-		"create:githubSecret": "aws secretsmanager create-secret --name GH_TOKEN --secret-string \"$GH_SECRET\"",
-		"list:output": "aws cloudformation describe-stacks --stack-name \"$STACK_NAME\" --query \"Stacks[].Outputs[]\""
+		"create:amplifyWebhook": "aws amplify create-webhook --app-id \"$APP_ID\" --branch-name \"$BRANCH_NAME\"",
+		"create:SSMSecret": "aws secretsmanager create-secret --name \"$SECRET_NAME\" --secret-string \"$SECRET_VALUE\"",
+		"list:deployOutput": "aws cloudformation describe-stacks --stack-name \"$STACK_NAME\" --query \"Stacks[].Outputs[]\""
 	},
 	"devDependencies": {
 		"@types/git-branch": "^2.0.2",
