@@ -44,9 +44,10 @@ export const createStripeWebhook = (
 	stripeWebhookFunc.addToRolePolicy(
 		new aws_iam.PolicyStatement({
 			actions: ['ssm:GetParameter'],
-			resources: [`arn:aws:ssm:${props.region}::parameter/saas/*`],
+			resources: ['arn:aws:ssm:us-east-1:311853295989:*'],
 		})
 	)
+
 	stripeWebhookFunc.addToRolePolicy(
 		new aws_iam.PolicyStatement({
 			actions: ['dynamodb:UpdateItem'],

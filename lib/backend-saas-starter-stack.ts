@@ -40,8 +40,8 @@ export class BackendSaasStarterStack extends cdk.Stack {
 			appName: context.appName,
 			env: context.environment,
 			environment: {
-				STRIPE_SECRET: `saas/${context.appName}/stripe-secret-${context.environment}`,
-				STRIPE_WEBHOOK_SECRET: `saas/${context.appName}/stripe-webhook-secret-${context.environment}`,
+				STRIPE_SECRET: `stripe-secret-${context.environment}`,
+				STRIPE_WEBHOOK_SECRET: `stripe-webhook-secret-${context.environment}`,
 				UserTableName: userDB.tableName,
 			},
 			region: context.region,
@@ -85,6 +85,9 @@ export class BackendSaasStarterStack extends cdk.Stack {
 
 		new CfnOutput(this, 'cognitoUserPoolId', {
 			value: cognitoAuth.userPool.userPoolId,
+		})
+		new CfnOutput(this, 'idenititypoolId', {
+			value: cognitoAuth.identityPool.identityPoolId,
 		})
 
 		new CfnOutput(this, 'cognitoUserPoolClientId', {

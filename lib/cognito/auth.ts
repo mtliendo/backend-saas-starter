@@ -22,9 +22,12 @@ export function createSaasAuth(scope: Construct, props: CreateSaasAuth) {
 			lambdaTriggers: {
 				postConfirmation: props.addUserPostConfirmation,
 			},
-			accountRecovery: awsCognito.AccountRecovery.EMAIL_ONLY,
+			accountRecovery: awsCognito.AccountRecovery.PHONE_AND_EMAIL,
 			userVerification: {
 				emailStyle: awsCognito.VerificationEmailStyle.CODE,
+			},
+			autoVerify: {
+				email: true,
 			},
 			standardAttributes: {
 				email: {
