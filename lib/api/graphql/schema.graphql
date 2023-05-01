@@ -4,7 +4,7 @@ type Query {
 	getRecipeIdea(ingredients: [String]!): String @aws_cognito_user_pools
 	getUser(id: String!): User @aws_cognito_user_pools
 	getRecipe(id: String): Recipe @aws_cognito_user_pools
-	listRecipes(id: String!): [Recipe] @aws_cognito_user_pools
+	listRecipes: [Recipe]! @aws_cognito_user_pools
 }
 
 type Mutation {
@@ -14,57 +14,34 @@ type Mutation {
 	deleteRecipe(id: String!): Recipe @aws_cognito_user_pools
 }
 
-type Ingredient {
-	items: [String]!
-}
-
-input IngredientInput {
-	items: [String]!
-}
-
 type Recipe {
 	id: ID!
+	coverImage: String!
 	title: String!
 	description: String!
-	coverImage: String!
-	ingredientsImage: String!
 	servings: Int!
 	owner: String!
-	ingredients: [Ingredient]!
-	steps: [Step]!
+	ingredientsText: String! # String generated from Quill.js
+	stepsText: String! # String generated from Quill.js
 }
 
 input RecipeCreateInput {
+	coverImage: String!
 	title: String!
 	description: String!
-	coverImage: String!
-	ingredientsImage: String!
 	servings: Int!
-	ingredients: [IngredientInput]!
-	steps: [StepInput]!
+	ingredientsText: String!
+	stepsText: String!
 }
 
 input RecipeUpdateInput {
 	id: ID!
-	title: String!
-	description: String!
 	coverImage: String!
-	ingredientsImage: String!
+	title: String!
+	description: String!
 	servings: Int!
-	ingredients: [IngredientInput]!
-	steps: [StepInput]!
-}
-
-type Step {
-	image: String
-	title: String!
-	description: String!
-}
-
-input StepInput {
-	image: String
-	title: String!
-	description: String!
+	ingredientsText: String!
+	stepsText: String!
 }
 
 type User {
@@ -96,4 +73,30 @@ enum PLAN_STATUS_ENUM {
 	past_due
 	unpaid
 	canceled
+}
+
+# query-by-username @index primary LinkTree sortKey: username
+type LinkTree
+	@model
+	@auth(
+		rules: [
+			{ allow: owner }
+			# amplify update auth: allow unauthenticated access (with IAM)
+			{ allow: public, provider: iam, operations: [read] }
+		]
+	) {
+	id: ID!
+	__typename: LinkTree
+	name: String!
+	owner: String!
+	username: 'mtliendo'
+	socialLinks: [{url: AWSURL}]!
+	description: String!
+	createdAt: AWSDateTime!
+	updatedAt: AWSDateTime!
+}
+
+enum SocialENUM {
+	twitter
+	facebook
 }
