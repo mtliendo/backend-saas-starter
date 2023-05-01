@@ -12,6 +12,7 @@ type CreateSaasAuth = {
 	env: envNameContext
 	addUserPostConfirmation: NodejsFunction
 }
+
 export function createSaasAuth(scope: Construct, props: CreateSaasAuth) {
 	const userPool = new awsCognito.UserPool(
 		scope,

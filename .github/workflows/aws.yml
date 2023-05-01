@@ -20,6 +20,8 @@ jobs:
         with:
           node-version: '18'
       - run: npm install
+      - run: npm run graphql:codegen
+      - run: npm run build:appsyncFunctions
       - name: cdk diff
         uses: youyo/aws-cdk-github-actions@v2
         with:

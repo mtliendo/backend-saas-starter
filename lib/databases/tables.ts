@@ -22,12 +22,12 @@ export function createSaasTable(
 	})
 
 	saasTable.addGlobalSecondaryIndex({
-		indexName: 'typename-id-index',
+		indexName: 'recipe-by-owner',
 		partitionKey: {
 			name: '__typename',
 			type: awsDynamodb.AttributeType.STRING,
 		},
-		sortKey: { name: 'id', type: awsDynamodb.AttributeType.STRING },
+		sortKey: { name: 'owner', type: awsDynamodb.AttributeType.STRING },
 	})
 
 	return saasTable

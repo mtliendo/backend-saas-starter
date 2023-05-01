@@ -54,6 +54,7 @@ export const createStripeWebhook = (
 			resources: [props.userDBTableArn],
 		})
 	)
+
 	const stripeWebhookURL = stripeWebhookFunc.addFunctionUrl({
 		authType: FunctionUrlAuthType.NONE,
 	})
